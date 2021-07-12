@@ -1,10 +1,26 @@
 CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
 BEGIN
   RETURN (
-      SELECT E2.Salary FROM (SELECT Salary, ROW_NUMBER() OVER w AS 'Row_number' FROM
-                             (SELECT Salary FROM Employee
-                              GROUP BY Salary) AS E1
-                             WINDOW w AS (ORDER BY E1.Salary DESC)) AS E2
-      WHERE E2.Row_number = N
+      SELECT DISTINCT E2.Salary 
+      FROM (
+          SELECT E1.Salary, DENSE_RANK() OVER w AS 'Dense_rank'
+          FROM Employee AS E1
+          WINDOW w AS (ORDER BY E1.Salary DESC)
+      ) AS E2
+      WHERE E2.Dense_rank = N
   );
 END
+
+
+# CREATE FUNCTION getNthHighestSalary(N INT) RETURNS INT
+#     BEGIN
+#         DECLARE M INT;
+#         SET M=N-1;
+#         RETURN (
+#             select Salary
+#             from Employee
+#             group by Salary
+#             order by Salary desc
+#             limit 1 offset M
+#     );
+# END
