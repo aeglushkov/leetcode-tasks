@@ -1,0 +1,2 @@
+SELECT Score, DENSE_RANK() OVER w AS 'Rank' FROM Scores
+WINDOW w AS (ORDER BY Score DESC);
